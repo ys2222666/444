@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心动相遇，缘来是你 | 高端社交平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #ff4b91;
+            --secondary-color: #6a11cb;
+            --accent-color: #ff7eb3;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --light-text: #fff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero-section {
+            background: var(--gradient-primary);
+            color: var(--light-text);
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-content h1 {
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero-content .lead {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, #ffd200, #ff9d00);
+            border: none;
+            color: #333;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 12px 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 157, 0, 0.4);
+        }
+        
+        .btn-outline-light {
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-light:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stats-container {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .hero-visual {
+            position: relative;
+            height: 400px;
+        }
+        
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            animation: float 3s ease-in-out infinite;
+            width: 280px;
+            overflow: hidden;
+        }
+        
+        .card-1 {
+            top: 10%;
+            left: 0;
+            animation-delay: 0s;
+        }
+        
+        .card-2 {
+            bottom: 10%;
+            right: 0;
+            animation-delay: 1.5s;
+        }
+        
+        .card-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 0.75s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .bg-primary-gradient {
+            background: var(--gradient-primary);
+        }
+        
+        .bg-success-gradient {
+            background: linear-gradient(135deg, #42e695, #3bb2b8);
+        }
+        
+        .bg-warning-gradient {
+            background: linear-gradient(135deg, #ffd200, #ff9d00);
+        }
+        
+        .story-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .cta-section {
+            background: var(--gradient-primary);
+            color: var(--light-text);
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-light-green {
+            background: #4cd964;
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 12px 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-light-green:hover {
+            background: #3ac253;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 217, 100, 0.4);
+            color: white;
+        }
+        
+        .btn-outline-light-green {
+            border: 2px solid #4cd964;
+            color: #4cd964;
+            background: transparent;
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 10px 30px;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-light-green:hover {
+            background: #4cd964;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 60px 0 30px;
+        }
+        
+        .footer-links h5 {
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .copyright {
+            border-top: 1px solid #34495e;
+            padding-top: 20px;
+            margin-top: 40px;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 0;
+                text-align: center;
+            }
+            
+            .hero-visual {
+                height: 300px;
+                margin-top: 30px;
+            }
+            
+            .floating-card {
+                width: 220px;
+            }
+            
+            .stats-container {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">心动交友</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">首页</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">发现</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">成功故事</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">会员服务</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">关于我们</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary me-2">登录</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">注册</a>
+                    {% else %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">个人中心</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主视觉区域 -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-4 fw-bold">遇见对的人<br><span class="text-warning">从此刻开始</span></h1>
+                        <p class="lead">基于深度学习的智能匹配系统，为您精准推荐志同道合的伙伴。超过10万成功案例，让缘分不再错过。</p>
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg">
+                                <i class="fas fa-heart me-2"></i>立即免费注册
+                            </a>
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>会员登录
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg">
+                                <i class="fas fa-home me-2"></i>进入个人中心
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="stats-container">
+                            <div class="stat-item">
+                                <span class="stat-number">10万+</span>
+                                <span class="stat-label">成功匹配</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">95%</span>
+                                <span class="stat-label">用户满意度</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">100%</span>
+                                <span class="stat-label">实名认证</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-visual position-relative">
+                        <div class="floating-card card-1">
+                            <div class="d-flex align-items-center p-3">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-3" width="50" height="50" alt="用户头像">
+                                <div>
+                                    <h6 class="mb-0">张先生 · 28</h6>
+                                    <small class="text-muted">刚刚匹配成功</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="floating-card card-2">
+                            <div class="d-flex align-items-center p-3">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-circle me-3" width="50" height="50" alt="用户头像">
+                                <div>
+                                    <h6 class="mb-0">李女士 · 26</h6>
+                                    <small class="text-muted">在线 · 寻找有缘人</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="floating-card card-3">
+                            <div class="d-flex align-items-center p-3">
+                                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-3" width="50" height="50" alt="用户头像">
+                                <div>
+                                    <h6 class="mb-0">王女士 · 30</h6>
+                                    <small class="text-muted">刚刚上线</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能区域 -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">为什么选择我们</h2>
+                <p class="lead text-muted">专业、安全、高效的社交平台，为您提供全方位的交友体验</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-primary-gradient mx-auto mb-4">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">精准地理位置</h4>
+                            <p class="text-muted">基于LBS技术，智能推荐附近优质用户，让相遇更自然</p>
+                            <ul class="list-unstyled text-start mt-3">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>实时位置更新</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>距离智能排序</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>隐私安全保护</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-success-gradient mx-auto mb-4">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">AI智能匹配</h4>
+                            <p class="text-muted">基于深度学习的推荐算法，精准匹配兴趣相投的伙伴</p>
+                            <ul class="list-unstyled text-start mt-3">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>多维度分析</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>实时学习优化</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>匹配度评分</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-warning-gradient mx-auto mb-4">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">安全认证体系</h4>
+                            <p class="text-muted">全方位安全保障，实名认证机制，让交友更安心</p>
+                            <ul class="list-unstyled text-start mt-3">
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>实名认证</li>
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>身份验证</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>24小时监控</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 成功案例 -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">成功故事</h2>
+                <p class="lead text-muted">听听他们在这里找到的幸福</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card story-card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/22.jpg" class="rounded-circle me-3" width="60" height="60" alt="成功案例">
+                                <div>
+                                    <h5 class="mb-0">王先生 & 李女士</h5>
+                                    <small class="text-muted">相识6个月 · 已订婚</small>
+                                </div>
+                            </div>
+                            <p class="text-muted">"通过平台的智能匹配，我们发现了彼此的共同爱好，从朋友到恋人，一切都那么自然。"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card story-card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/33.jpg" class="rounded-circle me-3" width="60" height="60" alt="成功案例">
+                                <div>
+                                    <h5 class="mb-0">张先生 & 刘女士</h5>
+                                    <small class="text-muted">相识1年 · 已婚</small>
+                                </div>
+                            </div>
+                            <p class="text-muted">"感谢这个平台让我们相遇，相似的价值观和生活理念让我们很快走到了一起。"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card story-card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/45.jpg" class="rounded-circle me-3" width="60" height="60" alt="成功案例">
+                                <div>
+                                    <h5 class="mb-0">陈先生 & 赵女士</h5>
+                                    <small class="text-muted">相识3个月 · 热恋中</small>
+                                </div>
+                            </div>
+                            <p class="text-muted">"虚拟恋人功能让我们在正式见面前就有了很好的了解，减少了初次见面的尴尬。"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA区域 -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="h1 fw-bold mb-4">准备好开始您的缘分之旅了吗？</h2>
+                    <p class="lead mb-4">加入10万+会员，开启属于您的精彩社交生活</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('register') }}" class="btn btn-light-green btn-lg px-5">
+                            <i class="fas fa-rocket me-2"></i>立即免费加入
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light-green btn-lg px-5">
+                            会员登录
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-light-green btn-lg px-5">
+                            <i class="fas fa-arrow-right me-2"></i>进入平台
+                        </a>
+                        {% endif %}
+                    </div>
+                    <p class="mt-3 small">注册即表示您同意我们的<a href="#" class="text-warning text-decoration-none">服务条款</a>和<a href="#" class="text-warning text-decoration-none">隐私政策</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="fw-bold mb-3" style="color: var(--primary-color);">心动交友</h3>
+                    <p class="mb-4">专业、安全、高效的高端社交平台，致力于帮助单身人士找到真爱。</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white"><i class="fab fa-weixin fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-weibo fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-qq fa-lg"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5>平台</h5>
+                        <ul>
+                            <li><a href="#">首页</a></li>
+                            <li><a href="#">发现</a></li>
+                            <li><a href="#">会员服务</a></li>
+                            <li><a href="#">成功故事</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5>支持</h5>
+                        <ul>
+                            <li><a href="#">帮助中心</a></li>
+                            <li><a href="#">联系我们</a></li>
+                            <li><a href="#">意见反馈</a></li>
+                            <li><a href="#">常见问题</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5>法律</h5>
+                        <ul>
+                            <li><a href="#">隐私政策</a></li>
+                            <li><a href="#">服务条款</a></li>
+                            <li><a href="#">免责声明</a></li>
+                            <li><a href="#">社区准则</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5>下载APP</h5>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="#" class="btn btn-outline-light btn-sm">
+                                <i class="fab fa-apple me-1"></i> App Store
+                            </a>
+                            <a href="#" class="btn btn-outline-light btn-sm">
+                                <i class="fab fa-google-play me-1"></i> Google Play
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 心动交友平台 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}附近的人 - 心动交友平台{% endblock %}
+
+{% block content %}
+<div class="nearby-container">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i>首页
+                    </a>
+                    <a href="{{ url_for('nearby_people') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-users me-2"></i>附近的人
+                    </a>
+                    <a href="{{ url_for('matching') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i>匹配交友
+                    </a>
+                    <a href="{{ url_for('virtual_partner') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-robot me-2"></i>虚拟恋人
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i>个人资料
+                    </a>
+                </div>
+            </div>
+
+            <!-- 筛选面板 -->
+            <div class="filter-panel mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-filter me-2"></i>筛选条件</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">距离范围</label>
+                            <select class="form-select form-select-sm" id="distanceFilter">
+                                <option value="5">5公里内</option>
+                                <option value="10" selected>10公里内</option>
+                                <option value="20">20公里内</option>
+                                <option value="50">50公里内</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">年龄范围</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" placeholder="最小" id="minAge">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" placeholder="最大" id="maxAge">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">性别</label>
+                            <select class="form-select form-select-sm" id="genderFilter">
+                                <option value="">全部</option>
+                                <option value="男">男</option>
+                                <option value="女">女</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm w-100" onclick="applyFilters()">
+                            <i class="fas fa-search me-1"></i>应用筛选
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-9">
+            <!-- 页面标题和统计 -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title mb-1">
+                            <i class="fas fa-users me-2 text-primary"></i>附近的人
+                        </h2>
+                        <p class="text-muted mb-0">发现您身边的朋友，开启浪漫邂逅</p>
+                    </div>
+                    <div class="user-count">
+                        <span class="badge bg-primary fs-6">
+                            <i class="fas fa-user-friends me-1"></i>
+                            {{ nearby_users|length }}人
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户卡片网格 -->
+            {% if nearby_users %}
+            <div class="row g-4" id="userGrid">
+                {% for user in nearby_users %}
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="user-card card h-100">
+                        <div class="card-body">
+                            <!-- 用户头像和信息 -->
+                            <div class="user-header d-flex align-items-center mb-3">
+                                <div class="user-avatar position-relative">
+                                    <img src="https://randomuser.me/api/portraits/{{ 'men' if user.gender == '男' else 'women' }}/{{ loop.index % 50 + 1 }}.jpg"
+                                         alt="{{ user.full_name }}"
+                                         class="avatar-img rounded-circle">
+                                    <span class="online-status {{ 'online' if loop.index % 3 == 0 else 'offline' }}"></span>
+                                </div>
+                                <div class="user-info ms-3">
+                                    <h5 class="user-name mb-1">{{ user.full_name }}</h5>
+                                    <div class="user-meta d-flex align-items-center">
+                                        {% if user.age and user.age != '未设置' %}
+                                        <span class="user-age me-2">{{ user.age }}岁</span>
+                                        {% endif %}
+                                        {% if user.gender and user.gender != '未设置' %}
+                                        <span class="user-gender">
+                                            <i class="fas fa-{{ 'mars' if user.gender == '男' else 'venus' }} me-1"></i>
+                                            {{ user.gender }}
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 用户简介 -->
+                            <div class="user-bio mb-3">
+                                <p class="text-muted small mb-0">{{ user.bio }}</p>
+                            </div>
+
+                            <!-- 距离和操作 -->
+                            <div class="user-actions d-flex justify-content-between align-items-center">
+                                <div class="distance-info">
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                        {{ user.distance }}公里
+                                    </span>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary btn-sm me-1"
+                                            onclick="sendMatchRequest('{{ user.user_id }}', this)">
+                                        <i class="fas fa-heart me-1"></i>喜欢
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm"
+                                            onclick="viewProfile('{{ user.user_id }}')">
+                                        <i class="fas fa-eye me-1"></i>查看
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- 空状态 -->
+            <div class="empty-state text-center py-5">
+                <div class="empty-icon mb-4">
+                    <i class="fas fa-users fa-4x text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">附近暂时没有其他用户</h4>
+                <p class="text-muted mb-4">可能是用户设置了隐私保护，或者您需要更新位置信息</p>
+                <div class="action-buttons">
+                    <a href="{{ url_for('edit_profile') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>更新位置
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="refreshNearby()">
+                        <i class="fas fa-redo me-1"></i>重新加载
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 加载更多 -->
+            {% if nearby_users %}
+            <div class="load-more text-center mt-5">
+                <button class="btn btn-outline-primary" onclick="loadMoreUsers()">
+                    <i class="fas fa-plus me-1"></i>加载更多
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 匹配成功弹窗 -->
+<div class="modal fade" id="matchSuccessModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-heart text-success fa-3x"></i>
+                </div>
+                <h5 class="mb-3">匹配请求已发送！</h5>
+                <p class="text-muted mb-3">对方接受后，你们就可以开始聊天了</p>
+                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.nearby-container {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: rgba(255, 75, 145, 0.05);
+    color: #ff4b91;
+    border-left-color: rgba(255, 75, 145, 0.3);
+}
+
+.sidebar .list-group-item.active {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    color: white;
+    border-left-color: white;
+}
+
+.filter-panel .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.user-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+}
+
+.online-status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.online-status.online {
+    background-color: #4cd964;
+}
+
+.online-status.offline {
+    background-color: #8e8e93;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.user-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.user-bio {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.distance-info .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+.action-buttons .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 75, 145, 0.4);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+.load-more {
+    padding: 2rem 0;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.success-icon {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .user-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .user-info {
+        margin-left: 0 !important;
+        margin-top: 1rem;
+    }
+
+    .user-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .action-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function sendMatchRequest(userId, button) {
+    // 显示加载状态
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>发送中...';
+    button.disabled = true;
+
+    fetch('/send_match_request/' + userId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 显示成功弹窗
+            const modal = new bootstrap.Modal(document.getElementById('matchSuccessModal'));
+            modal.show();
+
+            // 更新按钮状态
+            button.innerHTML = '<i class="fas fa-check me-1"></i>已发送';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+        } else {
+            alert(data.message || '发送失败，请重试');
+            // 恢复按钮状态
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('网络错误，请重试');
+        // 恢复按钮状态
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function viewProfile(userId) {
+    // 在实际应用中，这里会跳转到用户详情页
+    alert('查看用户详情: ' + userId);
+}
+
+function applyFilters() {
+    const distance = document.getElementById('distanceFilter').value;
+    const minAge = document.getElementById('minAge').value;
+    const maxAge = document.getElementById('maxAge').value;
+    const gender = document.getElementById('genderFilter').value;
+
+    // 显示加载状态
+    const userGrid = document.getElementById('userGrid');
+    if (userGrid) {
+        userGrid.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">加载中...</span>
+                </div>
+                <p class="mt-2 text-muted">正在筛选用户...</p>
+            </div>
+        `;
+    }
+
+    // 模拟筛选过程
+    setTimeout(() => {
+        alert(`应用筛选条件:\n距离: ${distance}公里\n年龄: ${minAge || '不限'}-${maxAge || '不限'}\n性别: ${gender || '不限'}`);
+        // 在实际应用中，这里会重新加载数据
+    }, 1000);
+}
+
+function refreshNearby() {
+    window.location.reload();
+}
+
+function loadMoreUsers() {
+    const loadMoreBtn = document.querySelector('.load-more button');
+    const originalText = loadMoreBtn.innerHTML;
+
+    loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>加载中...';
+    loadMoreBtn.disabled = true;
+
+    // 模拟加载更多数据
+    setTimeout(() => {
+        alert('已加载更多用户');
+        loadMoreBtn.innerHTML = originalText;
+        loadMoreBtn.disabled = false;
+    }, 1500);
+}
+
+// 添加卡片点击事件
+document.addEventListener('DOMContentLoaded', function() {
+    const userCards = document.querySelectorAll('.user-card');
+    userCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // 如果点击的是按钮，不触发卡片点击事件
+            if (!e.target.closest('button')) {
+                const userId = this.querySelector('button').getAttribute('onclick').match(/'([^']+)'/)[1];
+                viewProfile(userId);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

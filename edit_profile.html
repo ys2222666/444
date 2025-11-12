@@ -1,0 +1,639 @@
+{% extends "base.html" %}
+
+{% block title %}编辑资料 - 心动交友平台{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i>首页
+                    </a>
+                    <a href="{{ url_for('nearby_people') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>附近的人
+                    </a>
+                    <a href="{{ url_for('matching') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i>匹配交友
+                    </a>
+                    <a href="{{ url_for('virtual_partner') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-robot me-2"></i>虚拟恋人
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i>个人资料
+                    </a>
+                </div>
+            </div>
+
+            <!-- 编辑提示 -->
+            <div class="edit-tips mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>填写提示</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>真实信息提高匹配率</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>详细简介更受欢迎</span>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>设置位置发现附近的人</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>完善资料获得更多曝光</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-9">
+            <!-- 页面标题 -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title mb-1">
+                            <i class="fas fa-user-edit me-2 text-primary"></i>编辑个人资料
+                        </h2>
+                        <p class="text-muted mb-0">完善您的个人信息，获得更好的交友体验</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>返回
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编辑表单 -->
+            <div class="card edit-form-card">
+                <div class="card-body">
+                    <form method="POST" id="profileForm">
+                        <!-- 头像上传 -->
+                        <div class="avatar-upload-section mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <div class="avatar-preview">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                                             alt="用户头像"
+                                             class="avatar-img rounded-circle">
+                                        <div class="avatar-edit">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <h6 class="mb-1">个人头像</h6>
+                                    <p class="text-muted small mb-2">支持 JPG、PNG 格式，最大 2MB</p>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="triggerAvatarUpload()">
+                                        <i class="fas fa-upload me-1"></i>更换头像
+                                    </button>
+                                    <input type="file" id="avatarUpload" class="d-none" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 基本信息 -->
+                        <div class="section-card mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="section-title">
+                                    <i class="fas fa-user me-2 text-primary"></i>基本信息
+                                </h5>
+                                <p class="section-subtitle text-muted">填写您的基本个人信息</p>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="full_name" class="form-label fw-semibold">
+                                            <i class="fas fa-signature me-1 text-muted"></i>姓名
+                                        </label>
+                                        <input type="text" class="form-control" id="full_name" name="full_name"
+                                               value="{{ profile.full_name or '' }}"
+                                               placeholder="请输入您的真实姓名">
+                                        <div class="form-text">建议使用真实姓名，增加信任度</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="age" class="form-label fw-semibold">
+                                            <i class="fas fa-birthday-cake me-1 text-muted"></i>年龄
+                                        </label>
+                                        <input type="number" class="form-control" id="age" name="age"
+                                               value="{{ profile.age or '' }}" min="18" max="100"
+                                               placeholder="18">
+                                        <div class="form-text">18-100岁</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="gender" class="form-label fw-semibold">
+                                            <i class="fas fa-venus-mars me-1 text-muted"></i>性别
+                                        </label>
+                                        <select class="form-select" id="gender" name="gender">
+                                            <option value="">请选择性别</option>
+                                            <option value="男" {% if profile.gender == '男' %}selected{% endif %}>男</option>
+                                            <option value="女" {% if profile.gender == '女' %}selected{% endif %}>女</option>
+                                            <option value="其他" {% if profile.gender == '其他' %}selected{% endif %}>其他</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="bio" class="form-label fw-semibold">
+                                            <i class="fas fa-file-alt me-1 text-muted"></i>个人简介
+                                        </label>
+                                        <textarea class="form-control" id="bio" name="bio" rows="4"
+                                                  placeholder="介绍一下您的兴趣爱好、性格特点、生活态度等...">{{ profile.bio or '' }}</textarea>
+                                        <div class="form-text d-flex justify-content-between">
+                                            <span>详细真实的介绍能吸引更多志同道合的朋友</span>
+                                            <span id="bioCounter">0/500</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 位置信息 -->
+                        <div class="section-card mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="section-title">
+                                    <i class="fas fa-map-marker-alt me-2 text-success"></i>位置信息
+                                </h5>
+                                <p class="section-subtitle text-muted">设置您的位置，发现附近的朋友</p>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="latitude" class="form-label fw-semibold">纬度</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                            <input type="number" step="any" class="form-control" id="latitude" name="latitude"
+                                                   value="{{ profile.latitude or '' }}" placeholder="例如：39.9042">
+                                        </div>
+                                        <div class="form-text">北京天安门：39.9042</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="longitude" class="form-label fw-semibold">经度</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                            <input type="number" step="any" class="form-control" id="longitude" name="longitude"
+                                                   value="{{ profile.longitude or '' }}" placeholder="例如：116.4074">
+                                        </div>
+                                        <div class="form-text">北京天安门：116.4074</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="getCurrentLocation()">
+                                        <i class="fas fa-location-arrow me-1"></i>自动获取当前位置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 联系方式 -->
+                        <div class="section-card mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="section-title">
+                                    <i class="fas fa-phone me-2 text-info"></i>联系方式
+                                </h5>
+                                <p class="section-subtitle text-muted">匹配成功后可见的联系方式</p>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label fw-semibold">
+                                            <i class="fas fa-mobile-alt me-1 text-muted"></i>手机号
+                                        </label>
+                                        <input type="tel" class="form-control" id="phone" name="phone"
+                                               value="{{ profile.phone or '' }}" placeholder="请输入手机号码">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="wechat" class="form-label fw-semibold">
+                                            <i class="fab fa-weixin me-1 text-muted"></i>微信
+                                        </label>
+                                        <input type="text" class="form-control" id="wechat" name="wechat"
+                                               value="{{ profile.wechat or '' }}" placeholder="请输入微信号">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 隐私设置 -->
+                        <div class="section-card mb-4">
+                            <div class="section-header mb-3">
+                                <h5 class="section-title">
+                                    <i class="fas fa-shield-alt me-2 text-warning"></i>隐私设置
+                                </h5>
+                                <p class="section-subtitle text-muted">管理您的信息可见范围</p>
+                            </div>
+                            <div class="privacy-settings">
+                                <div class="privacy-item d-flex justify-content-between align-items-center p-3 bg-light rounded mb-2">
+                                    <div class="privacy-info">
+                                        <h6 class="mb-1">个人资料对外可见</h6>
+                                        <p class="small text-muted mb-0">其他人可以看到您的基本信息</p>
+                                    </div>
+                                    <div class="privacy-toggle">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="profile_visible" name="profile_visible" {% if profile.profile_visible %}checked{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="privacy-item d-flex justify-content-between align-items-center p-3 bg-light rounded mb-2">
+                                    <div class="privacy-info">
+                                        <h6 class="mb-1">位置信息对外可见</h6>
+                                        <p class="small text-muted mb-0">显示您的大致位置信息</p>
+                                    </div>
+                                    <div class="privacy-toggle">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="location_visible" name="location_visible" {% if profile.location_visible %}checked{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="privacy-item d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                    <div class="privacy-info">
+                                        <h6 class="mb-1">联系方式对外可见</h6>
+                                        <p class="small text-muted mb-0">匹配成功后显示联系方式</p>
+                                    </div>
+                                    <div class="privacy-toggle">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="contact_visible" name="contact_visible" {% if profile.contact_visible %}checked{% endif %}>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 表单操作 -->
+                        <div class="form-actions d-flex gap-2 justify-content-end pt-4 border-top">
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>取消
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>保存修改
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.edit-profile-container {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: rgba(255, 75, 145, 0.05);
+    color: #ff4b91;
+    border-left-color: rgba(255, 75, 145, 0.3);
+}
+
+.sidebar .list-group-item.active {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    color: white;
+    border-left-color: white;
+}
+
+.edit-tips .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.edit-form-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* 头像上传 */
+.avatar-preview {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.avatar-edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 24px;
+    height: 24px;
+    background: #ff4b91;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+.avatar-preview:hover .avatar-img {
+    border-color: #ff4b91;
+}
+
+/* 表单分区 */
+.section-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.section-header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1rem;
+}
+
+.section-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.section-subtitle {
+    font-size: 0.9rem;
+}
+
+/* 表单控件 */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #ff4b91;
+    box-shadow: 0 0 0 0.2rem rgba(255, 75, 145, 0.25);
+}
+
+.form-text {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* 隐私设置 */
+.privacy-item {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.privacy-item:hover {
+    border-color: #ff4b91;
+    background: white !important;
+}
+
+.privacy-info h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #ff4b91;
+    border-color: #ff4b91;
+}
+
+.form-check-input:focus {
+    border-color: #ff4b91;
+    box-shadow: 0 0 0 0.2rem rgba(255, 75, 145, 0.25);
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 75, 145, 0.4);
+}
+
+.btn-outline-primary {
+    border-color: #ff4b91;
+    color: #ff4b91;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ff4b91;
+    border-color: #ff4b91;
+}
+
+/* 输入组 */
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .section-card {
+        padding: 1rem;
+    }
+
+    .privacy-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function triggerAvatarUpload() {
+    document.getElementById('avatarUpload').click();
+}
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>获取中...';
+        btn.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                document.getElementById('latitude').value = lat.toFixed(6);
+                document.getElementById('longitude').value = lng.toFixed(6);
+
+                btn.innerHTML = '<i class="fas fa-check me-1"></i>获取成功';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            },
+            function(error) {
+                console.error('获取位置失败:', error);
+                alert('获取位置失败，请手动输入或检查浏览器权限');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 60000
+            }
+        );
+    } else {
+        alert('您的浏览器不支持地理位置获取功能');
+    }
+}
+
+// 个人简介字数统计
+document.addEventListener('DOMContentLoaded', function() {
+    const bioTextarea = document.getElementById('bio');
+    const bioCounter = document.getElementById('bioCounter');
+
+    if (bioTextarea && bioCounter) {
+        // 初始化计数
+        bioCounter.textContent = `${bioTextarea.value.length}/500`;
+
+        // 输入时更新计数
+        bioTextarea.addEventListener('input', function() {
+            const length = this.value.length;
+            bioCounter.textContent = `${length}/500`;
+
+            if (length > 500) {
+                bioCounter.style.color = '#dc3545';
+            } else {
+                bioCounter.style.color = '#6c757d';
+            }
+        });
+    }
+
+    // 头像上传预览
+    const avatarUpload = document.getElementById('avatarUpload');
+    const avatarImg = document.querySelector('.avatar-img');
+
+    if (avatarUpload && avatarImg) {
+        avatarUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('图片大小不能超过 2MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // 表单提交验证
+    const form = document.getElementById('profileForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const bio = document.getElementById('bio').value;
+            if (bio.length > 500) {
+                e.preventDefault();
+                alert('个人简介不能超过500字');
+                return;
+            }
+
+            // 可以添加更多验证逻辑
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>保存中...';
+            submitBtn.disabled = true;
+
+            // 在实际应用中，这里会有AJAX提交
+            // 这里只是模拟，实际应该移除setTimeout
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+    }
+});
+</script>
+{% endblock %}
