@@ -1,0 +1,578 @@
+{% extends "base.html" %}
+
+{% block title %}智能匹配 - 心动交友平台{% endblock %}
+
+{% block content %}
+<div class="matching-container">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i>首页
+                    </a>
+                    <a href="{{ url_for('nearby_people') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>附近的人
+                    </a>
+                    <a href="{{ url_for('matching') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-heart me-2"></i>匹配交友
+                    </a>
+                    <a href="{{ url_for('virtual_partner') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-robot me-2"></i>虚拟恋人
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i>个人资料
+                    </a>
+                </div>
+            </div>
+
+            <!-- 匹配统计 -->
+            <div class="matching-stats mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>匹配统计</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-item text-center mb-3">
+                            <div class="stat-number text-primary">{{ potential_matches|length }}</div>
+                            <div class="stat-label">今日推荐</div>
+                        </div>
+                        <div class="stat-item text-center mb-3">
+                            <div class="stat-number text-success">12</div>
+                            <div class="stat-label">成功匹配</div>
+                        </div>
+                        <div class="stat-item text-center">
+                            <div class="stat-number text-warning">85%</div>
+                            <div class="stat-label">匹配准确率</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 匹配偏好 -->
+            <div class="matching-preferences mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-sliders-h me-2"></i>匹配偏好</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="preference-item mb-3">
+                            <label class="form-label small fw-semibold">匹配精度</label>
+                            <div class="d-flex align-items-center">
+                                <span class="small me-2">宽松</span>
+                                <div class="form-check form-switch mx-2">
+                                    <input class="form-check-input" type="checkbox" id="strictMatching" checked>
+                                    <label class="form-check-label small" for="strictMatching">严格</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preference-item">
+                            <label class="form-label small fw-semibold">推荐频率</label>
+                            <select class="form-select form-select-sm">
+                                <option>每日推荐</option>
+                                <option>每周推荐</option>
+                                <option>实时推荐</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-9">
+            <!-- 页面标题 -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title mb-1">
+                            <i class="fas fa-heart me-2 text-danger"></i>智能匹配
+                        </h2>
+                        <p class="text-muted mb-0">基于AI算法为您推荐最合适的交友对象</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="refreshMatches()">
+                            <i class="fas fa-sync-alt me-1"></i>刷新推荐
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 匹配推荐 -->
+            {% if potential_matches %}
+            <div class="matching-grid">
+                <div class="row g-4">
+                    {% for match in potential_matches %}
+                    <div class="col-xl-4 col-lg-6">
+                        <div class="match-card card h-100">
+                            <div class="card-body">
+                                <!-- 用户头像和基本信息 -->
+                                <div class="match-header d-flex align-items-center mb-3">
+                                    <div class="match-avatar position-relative">
+                                        <img src="https://randomuser.me/api/portraits/{{ 'men' if match.gender == '男' else 'women' }}/{{ loop.index % 50 + 1 }}.jpg"
+                                             alt="{{ match.full_name }}"
+                                             class="avatar-img rounded-circle">
+                                        <div class="match-badge">
+                                            <i class="fas fa-heart"></i>
+                                        </div>
+                                    </div>
+                                    <div class="match-info ms-3">
+                                        <h5 class="match-name mb-1">{{ match.full_name }}</h5>
+                                        <div class="match-meta d-flex align-items-center">
+                                            {% if match.age and match.age != '未设置' %}
+                                            <span class="match-age me-2">{{ match.age }}岁</span>
+                                            {% endif %}
+                                            {% if match.gender and match.gender != '未设置' %}
+                                            <span class="match-gender">
+                                                <i class="fas fa-{{ 'mars' if match.gender == '男' else 'venus' }}"></i>
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 匹配度显示 -->
+                                <div class="match-score mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small fw-semibold">匹配度</span>
+                                        <span class="score-value fw-bold text-primary">{{ match.match_score }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar"
+                                             style="width: {{ match.match_score }}%; background: linear-gradient(135deg, #ff6b6b, #ff4b91);">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 用户简介 -->
+                                <div class="match-bio mb-3">
+                                    <p class="text-muted small mb-2">{{ match.bio }}</p>
+                                </div>
+
+                                <!-- 距离信息 -->
+                                {% if match.distance %}
+                                <div class="distance-info mb-3">
+                                    <span class="badge bg-light text-dark small">
+                                        <i class="fas fa-map-marker-alt me-1 text-primary"></i>
+                                        距离 {{ match.distance }}km
+                                    </span>
+                                </div>
+                                {% endif %}
+
+                                <!-- 匹配因素 -->
+                                <div class="match-factors mb-3">
+                                    <div class="factor-tags">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary me-1 mb-1">兴趣相似</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success me-1 mb-1">价值观匹配</span>
+                                        <span class="badge bg-warning bg-opacity-10 text-warning me-1 mb-1">生活方式</span>
+                                    </div>
+                                </div>
+
+                                <!-- 操作按钮 -->
+                                <div class="match-actions d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm flex-fill"
+                                            onclick="sendMatchRequest('{{ match.user_id }}', this)">
+                                        <i class="fas fa-heart me-1"></i>喜欢
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm flex-fill"
+                                            onclick="skipMatch('{{ match.user_id }}', this)">
+                                        <i class="fas fa-times me-1"></i>跳过
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 加载更多 -->
+            <div class="load-more text-center mt-5">
+                <button class="btn btn-outline-primary" onclick="loadMoreMatches()">
+                    <i class="fas fa-plus me-1"></i>加载更多推荐
+                </button>
+            </div>
+
+            {% else %}
+            <!-- 空状态 -->
+            <div class="empty-state text-center py-5">
+                <div class="empty-icon mb-4">
+                    <i class="fas fa-heart fa-4x text-muted"></i>
+                </div>
+                <h4 class="text-muted mb-3">暂无匹配推荐</h4>
+                <p class="text-muted mb-4">请完善您的个人资料以获得更精准的匹配推荐</p>
+                <div class="action-buttons">
+                    <a href="{{ url_for('edit_profile') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-user-edit me-1"></i>完善资料
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="refreshMatches()">
+                        <i class="fas fa-redo me-1"></i>重新匹配
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 匹配成功弹窗 -->
+<div class="modal fade" id="matchSuccessModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="success-icon mb-3">
+                    <i class="fas fa-heart text-danger fa-3x"></i>
+                </div>
+                <h5 class="mb-3">匹配请求已发送！</h5>
+                <p class="text-muted small mb-3">对方接受后，你们就可以开始聊天了</p>
+                <button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 跳过确认弹窗 -->
+<div class="modal fade" id="skipConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="skip-icon mb-3">
+                    <i class="fas fa-user-times text-warning fa-3x"></i>
+                </div>
+                <h5 class="mb-3">跳过此用户？</h5>
+                <p class="text-muted small mb-3">跳过后将不再推荐此用户</p>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning flex-fill" id="confirmSkip">确认跳过</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.matching-container {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: rgba(255, 75, 145, 0.05);
+    color: #ff4b91;
+    border-left-color: rgba(255, 75, 145, 0.3);
+}
+
+.sidebar .list-group-item.active {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    color: white;
+    border-left-color: white;
+}
+
+.matching-stats .card,
+.matching-preferences .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.match-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.match-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 3px solid #f8f9fa;
+}
+
+.match-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #ff6b6b, #ff4b91);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.7rem;
+    border: 2px solid white;
+}
+
+.match-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.match-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.match-score .progress {
+    border-radius: 10px;
+    background-color: #f0f0f0;
+}
+
+.match-score .progress-bar {
+    border-radius: 10px;
+}
+
+.score-value {
+    font-size: 0.9rem;
+}
+
+.factor-tags .badge {
+    font-size: 0.7rem;
+    padding: 0.3em 0.6em;
+}
+
+.match-actions .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #ff6b6b, #ff4b91);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 75, 145, 0.4);
+}
+
+.empty-state {
+    background: white;
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+.load-more {
+    padding: 2rem 0;
+}
+
+.modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.success-icon, .skip-icon {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .match-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .match-info {
+        margin-left: 0 !important;
+        margin-top: 1rem;
+    }
+
+    .match-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentSkipUserId = null;
+let currentSkipButton = null;
+
+function sendMatchRequest(userId, button) {
+    // 显示加载状态
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>发送中...';
+    button.disabled = true;
+
+    fetch('/send_match_request/' + userId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 显示成功弹窗
+            const modal = new bootstrap.Modal(document.getElementById('matchSuccessModal'));
+            modal.show();
+
+            // 更新按钮状态
+            button.innerHTML = '<i class="fas fa-check me-1"></i>已发送';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            button.disabled = true;
+
+            // 禁用跳过按钮
+            const skipButton = button.parentElement.querySelector('.btn-outline-primary');
+            if (skipButton) {
+                skipButton.disabled = true;
+                skipButton.classList.add('disabled');
+            }
+        } else {
+            alert(data.message || '发送失败，请重试');
+            // 恢复按钮状态
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('网络错误，请重试');
+        // 恢复按钮状态
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function skipMatch(userId, button) {
+    currentSkipUserId = userId;
+    currentSkipButton = button;
+
+    const modal = new bootstrap.Modal(document.getElementById('skipConfirmModal'));
+    modal.show();
+}
+
+function confirmSkip() {
+    if (currentSkipUserId && currentSkipButton) {
+        // 显示加载状态
+        const originalText = currentSkipButton.innerHTML;
+        currentSkipButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>跳过中...';
+        currentSkipButton.disabled = true;
+
+        // 模拟跳过请求
+        setTimeout(() => {
+            // 在实际应用中，这里会调用后端API
+            currentSkipButton.innerHTML = '<i class="fas fa-check me-1"></i>已跳过';
+            currentSkipButton.classList.remove('btn-outline-primary');
+            currentSkipButton.classList.add('btn-secondary');
+            currentSkipButton.disabled = true;
+
+            // 禁用喜欢按钮
+            const likeButton = currentSkipButton.parentElement.querySelector('.btn-primary');
+            if (likeButton) {
+                likeButton.disabled = true;
+                likeButton.classList.add('disabled');
+            }
+
+            // 关闭弹窗
+            const modal = bootstrap.Modal.getInstance(document.getElementById('skipConfirmModal'));
+            modal.hide();
+        }, 1000);
+    }
+}
+
+function refreshMatches() {
+    const refreshBtn = document.querySelector('.header-actions button');
+    const originalText = refreshBtn.innerHTML;
+
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>刷新中...';
+    refreshBtn.disabled = true;
+
+    // 模拟刷新过程
+    setTimeout(() => {
+        window.location.reload();
+    }, 1500);
+}
+
+function loadMoreMatches() {
+    const loadMoreBtn = document.querySelector('.load-more button');
+    const originalText = loadMoreBtn.innerHTML;
+
+    loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>加载中...';
+    loadMoreBtn.disabled = true;
+
+    // 模拟加载更多数据
+    setTimeout(() => {
+        alert('已加载更多匹配推荐');
+        loadMoreBtn.innerHTML = originalText;
+        loadMoreBtn.disabled = false;
+    }, 2000);
+}
+
+// 初始化事件监听
+document.addEventListener('DOMContentLoaded', function() {
+    // 确认跳过按钮事件
+    document.getElementById('confirmSkip').addEventListener('click', confirmSkip);
+
+    // 卡片点击事件
+    const matchCards = document.querySelectorAll('.match-card');
+    matchCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // 如果点击的是按钮，不触发卡片点击事件
+            if (!e.target.closest('button')) {
+                const userId = this.querySelector('.btn-primary').getAttribute('onclick').match(/'([^']+)'/)[1];
+                // 在实际应用中，这里会跳转到用户详情页
+                alert('查看用户详情: ' + userId);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

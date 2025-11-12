@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}个人资料 - 心动交友平台{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+            <div class="sidebar">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('dashboard') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home me-2"></i>首页
+                    </a>
+                    <a href="{{ url_for('nearby_people') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>附近的人
+                    </a>
+                    <a href="{{ url_for('matching') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i>匹配交友
+                    </a>
+                    <a href="{{ url_for('virtual_partner') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-robot me-2"></i>虚拟恋人
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-user me-2"></i>个人资料
+                    </a>
+                </div>
+            </div>
+
+            <!-- 资料完整度 -->
+            <div class="completion-card mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>资料完整度</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="completion-circle mb-3">
+                            <div class="circular-progress" data-percentage="{% if profile.full_name and profile.age and profile.gender and profile.bio %}85{% else %}45{% endif %}">
+                                <span class="progress-value">0%</span>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-3">完善资料可提高匹配成功率</p>
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-edit me-1"></i>完善资料
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="col-md-9">
+            <!-- 页面标题 -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="page-title mb-1">
+                            <i class="fas fa-user-circle me-2 text-primary"></i>个人资料
+                        </h2>
+                        <p class="text-muted mb-0">管理您的个人信息和隐私设置</p>
+                    </div>
+                    <div class="header-actions">
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>编辑资料
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 基本信息卡片 -->
+            <div class="card profile-card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>基本信息</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- 头像区域 -->
+                        <div class="col-md-3 text-center">
+                            <div class="profile-avatar-section">
+                                <div class="avatar-container mb-3">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                                         alt="用户头像"
+                                         class="profile-avatar rounded-circle">
+                                    <div class="avatar-overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-camera me-1"></i>更换头像
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 基本信息 -->
+                        <div class="col-md-9">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="info-item">
+                                        <label class="info-label"><i class="fas fa-user me-2 text-muted"></i>姓名</label>
+                                        <div class="info-value">{{ profile.full_name or '未设置' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-item">
+                                        <label class="info-label"><i class="fas fa-birthday-cake me-2 text-muted"></i>年龄</label>
+                                        <div class="info-value">{{ profile.age or '未设置' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-item">
+                                        <label class="info-label"><i class="fas fa-venus-mars me-2 text-muted"></i>性别</label>
+                                        <div class="info-value">{{ profile.gender or '未设置' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-item">
+                                        <label class="info-label"><i class="fas fa-map-marker-alt me-2 text-muted"></i>位置</label>
+                                        <div class="info-value">
+                                            {% if profile.latitude and profile.longitude %}
+                                            <span class="text-success">
+                                                <i class="fas fa-check-circle me-1"></i>已设置
+                                            </span>
+                                            {% else %}
+                                            <span class="text-danger">
+                                                <i class="fas fa-times-circle me-1"></i>未设置
+                                            </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="info-item">
+                                        <label class="info-label"><i class="fas fa-file-alt me-2 text-muted"></i>个人简介</label>
+                                        <div class="info-value bio-text">{{ profile.bio or '这个人很懒，什么都没有写...' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- 联系方式 -->
+                <div class="col-md-6">
+                    <div class="card contact-card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-phone me-2 text-success"></i>联系方式</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-item mb-3">
+                                <label class="info-label"><i class="fas fa-mobile-alt me-2 text-muted"></i>手机号码</label>
+                                <div class="info-value">
+                                    {% if profile.phone %}
+                                    <span class="text-success">{{ profile.phone }}</span>
+                                    {% else %}
+                                    <span class="text-muted">未设置</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label class="info-label"><i class="fab fa-weixin me-2 text-muted"></i>微信</label>
+                                <div class="info-value">
+                                    {% if profile.wechat %}
+                                    <span class="text-success">{{ profile.wechat }}</span>
+                                    {% else %}
+                                    <span class="text-muted">未设置</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 隐私设置 -->
+                <div class="col-md-6">
+                    <div class="card privacy-card h-100">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-shield-alt me-2 text-warning"></i>隐私设置</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="privacy-item d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="mb-1">个人资料可见</h6>
+                                    <p class="small text-muted mb-0">其他人可以看到您的基本信息</p>
+                                </div>
+                                <div class="privacy-status">
+                                    {% if profile.profile_visible %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-eye me-1"></i>公开
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-eye-slash me-1"></i>隐藏
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="privacy-item d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="mb-1">位置信息可见</h6>
+                                    <p class="small text-muted mb-0">显示您的大致位置信息</p>
+                                </div>
+                                <div class="privacy-status">
+                                    {% if profile.location_visible %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-map-marker-alt me-1"></i>公开
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-map-marker-slash me-1"></i>隐藏
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="privacy-item d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <h6 class="mb-1">联系方式可见</h6>
+                                    <p class="small text-muted mb-0">匹配成功后显示联系方式</p>
+                                </div>
+                                <div class="privacy-status">
+                                    {% if profile.contact_visible %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-phone me-1"></i>公开
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-phone-slash me-1"></i>隐藏
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计信息 -->
+            <div class="card stats-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2 text-info"></i>数据统计</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-number text-primary">12</div>
+                                <div class="stat-label">关注</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-number text-success">24</div>
+                                <div class="stat-label">粉丝</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-number text-warning">8</div>
+                                <div class="stat-label">成功匹配</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-number text-info">156</div>
+                                <div class="stat-label">被浏览</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.profile-container {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.sidebar .list-group-item {
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: rgba(255, 75, 145, 0.05);
+    color: #ff4b91;
+    border-left-color: rgba(255, 75, 145, 0.3);
+}
+
+.sidebar .list-group-item.active {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    color: white;
+    border-left-color: white;
+}
+
+.completion-card .card,
+.profile-card,
+.contact-card,
+.privacy-card,
+.stats-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+    font-weight: 700;
+    color: #333;
+}
+
+/* 圆形进度条 */
+.circular-progress {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    background: conic-gradient(#ff4b91 var(--progress-degree), #f0f0f0 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.circular-progress::before {
+    content: "";
+    position: absolute;
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    background-color: white;
+}
+
+.progress-value {
+    position: relative;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ff4b91;
+}
+
+/* 头像样式 */
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.avatar-container:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-container:hover .profile-avatar {
+    border-color: #ff4b91;
+}
+
+/* 信息项样式 */
+.info-item {
+    padding: 0.5rem 0;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.info-value {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.bio-text {
+    line-height: 1.6;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ff4b91;
+}
+
+/* 隐私设置项 */
+.privacy-item {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.privacy-item:hover {
+    border-color: #ff4b91;
+    background: rgba(255, 75, 145, 0.02) !important;
+}
+
+.privacy-item h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+/* 统计信息 */
+.stat-item {
+    padding: 1rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* 按钮样式 */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6a11cb 0%, #ff4b91 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(255, 75, 145, 0.4);
+}
+
+/* 徽章样式 */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .profile-avatar-section {
+        margin-bottom: 2rem;
+    }
+
+    .info-item {
+        text-align: center;
+    }
+
+    .privacy-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .stat-item {
+        padding: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化圆形进度条
+    const progressElements = document.querySelectorAll('.circular-progress');
+    progressElements.forEach(element => {
+        const percentage = element.getAttribute('data-percentage');
+        const progressValue = element.querySelector('.progress-value');
+
+        // 设置CSS变量
+        element.style.setProperty('--progress-degree', `${percentage * 3.6}deg`);
+
+        // 动画显示百分比
+        let current = 0;
+        const interval = setInterval(() => {
+            if (current >= percentage) {
+                clearInterval(interval);
+            } else {
+                current++;
+                progressValue.textContent = current + '%';
+            }
+        }, 20);
+    });
+
+    // 头像上传交互
+    const avatarContainer = document.querySelector('.avatar-container');
+    if (avatarContainer) {
+        avatarContainer.addEventListener('click', function() {
+            // 在实际应用中，这里会触发文件选择
+            alert('头像上传功能开发中...');
+        });
+    }
+
+    // 隐私设置项点击交互
+    const privacyItems = document.querySelectorAll('.privacy-item');
+    privacyItems.forEach(item => {
+        item.addEventListener('click', function() {
+            // 在实际应用中，这里会跳转到编辑页面或显示设置弹窗
+            const settingName = this.querySelector('h6').textContent;
+            alert(`跳转到${settingName}设置`);
+        });
+    });
+
+    // 卡片悬停效果
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
